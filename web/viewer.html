@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1"
+    />
+    <meta name="referrer" content="no-referrer" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; worker-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: blob:; connect-src 'self' https: http:; object-src 'none'; base-uri 'self'"
+    />
+    <title>Đọc tài liệu · 24HMoney</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="../assets/viewer-00a1efd1ce58.css" />
+    <script defer src="../assets/viewer-6c74b0b0cfbc.js"></script>
+  </head>
+  <body>
+    <header id="toolbar" class="standalone">
+      <button id="closeReader" aria-label="Quay lại" hidden>
+        <svg
+          class="toolbar-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <path d="m15 4-8 8 8 8" />
+        </svg>
+      </button>
+      <div class="document-heading">
+        <svg
+          class="document-icon"
+          viewBox="0 0 32 32"
+          role="img"
+          aria-label="24HMoney"
+          focusable="false"
+        >
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M0 14.7967C0.585799 6.89526 6.89414 0.58648 14.7954 0V7.73333C11.1809 8.25953 8.25892 11.182 7.73333 14.7967L0 14.7967ZM24.1333 17.2034C23.6075 20.8188 20.8177 23.7415 17.2021 24.2667V32C25.1044 31.4147 31.414 25.1055 32 17.2034L24.1333 17.2034ZM14.7954 24.2667C11.1809 23.7405 8.25902 20.818 7.73333 17.2034L1.93626e-05 17.2034C0.585937 25.1047 6.89423 31.4133 14.7954 31.9998V24.2667Z"
+            fill="#00D066"
+          />
+          <path
+            fill-rule="evenodd"
+            clip-rule="evenodd"
+            d="M17.2003 7.73333L17.2005 0H32.0003V14.8H24.1337V8.73218L17.1762 15.7593C17.192 15.8371 17.2003 15.9176 17.2003 16C17.2003 16.6627 16.663 17.2 16.0003 17.2C15.3376 17.2 14.8003 16.6627 14.8003 16C14.8003 15.3373 15.3376 14.8 16.0003 14.8C16.0782 14.8 16.1545 14.8074 16.2283 14.8216L23.2464 7.73333H17.2003Z"
+            fill="#865AFF"
+          />
+        </svg>
+        <div>
+          <h1 id="documentTitle">Tài liệu PDF</h1>
+          <p id="documentInfo">Trình đọc tài liệu</p>
+        </div>
+      </div>
+      <button
+        id="toggleSearch"
+        aria-label="Tìm trong tài liệu"
+        title="Tìm kiếm"
+      >
+        <svg
+          class="toolbar-icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+          focusable="false"
+        >
+          <circle cx="10.5" cy="10.5" r="7.5" />
+          <path d="m16 16 5 5" />
+        </svg>
+      </button>
+      <button
+        id="toggleTheme"
+        aria-label="Đổi giao diện sáng tối"
+        title="Giao diện"
+      >
+        ◐
+      </button>
+    </header>
+    <form id="searchbar" class="standalone" hidden>
+      <input
+        id="searchInput"
+        type="search"
+        placeholder="Tìm nội dung trong tài liệu…"
+        aria-label="Tìm nội dung"
+        autocomplete="off"
+      />
+      <span id="matchCount" aria-live="polite">0/0</span>
+      <button type="button" id="previousMatch" aria-label="Kết quả trước">
+        ‹
+      </button>
+      <button type="submit" aria-label="Kết quả sau">›</button>
+      <button type="button" id="closeSearch" aria-label="Đóng tìm kiếm">
+        ×
+      </button>
+    </form>
+    <main id="readerArea">
+      <div id="viewerContainer" tabindex="0">
+        <div id="viewer" class="pdfViewer"></div>
+      </div>
+      <section id="drawer" hidden aria-label="Điều hướng tài liệu">
+        <div class="drawer-header">
+          <strong id="drawerTitle"></strong
+          ><button id="closeDrawer">Đóng</button>
+        </div>
+        <div id="drawerContent"></div>
+      </section>
+      <div id="status" class="standalone" role="status">
+        <div class="spinner"></div>
+        <strong id="statusTitle">Đang mở tài liệu…</strong>
+        <p id="statusMessage"></p>
+        <button id="retry" hidden>Thử lại</button>
+      </div>
+    </main>
+    <footer id="controls" class="standalone">
+      <div class="page-controls">
+        <button data-command="previous" aria-label="Trang trước">‹</button>
+        <label class="page-counter"
+          ><input
+            id="pageInput"
+            type="number"
+            min="1"
+            value="1"
+            aria-label="Đến trang"
+          /><span id="pageTotal">/ —</span></label
+        >
+        <button data-command="next" aria-label="Trang sau">›</button>
+        <div class="spacer"></div>
+        <button
+          data-command="fit"
+          aria-label="Vừa chiều rộng"
+          title="Vừa chiều rộng"
+        >
+          ↔
+        </button>
+        <button
+          data-command="rotate"
+          aria-label="Xoay trang"
+          title="Xoay trang"
+        >
+          ↻
+        </button>
+      </div>
+      <nav class="action-controls" aria-label="Công cụ tài liệu">
+        <button data-command="outline"><span>☷</span>Mục lục</button>
+        <button data-command="pages"><span>▦</span>Các trang</button>
+        <div id="toolbarViewerRight" class="export-controls">
+          <button data-command="download"><span>↓</span>Tải về</button>
+          <button id="share"><span>↗</span>Chia sẻ</button>
+        </div>
+      </nav>
+    </footer>
+    <dialog id="passwordDialog">
+      <form id="passwordForm">
+        <h2>Mật khẩu tài liệu</h2>
+        <p id="passwordMessage">Tài liệu này được bảo vệ bằng mật khẩu.</p>
+        <input
+          id="passwordInput"
+          type="password"
+          autocomplete="off"
+          aria-label="Mật khẩu PDF"
+          required
+        />
+        <div class="dialog-buttons">
+          <button type="button" id="cancelPassword">Hủy</button
+          ><button type="submit" class="primary">Mở tài liệu</button>
+        </div>
+      </form>
+    </dialog>
+    <div id="toast" role="status" hidden></div>
+  </body>
+</html>
